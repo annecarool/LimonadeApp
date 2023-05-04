@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
 }
 @Preview
 @Composable
-    fun AppLimonade() {
+    fun AppLimonade() { A
     var tela by remember { mutableStateOf(1) }
 
     when (tela) {
