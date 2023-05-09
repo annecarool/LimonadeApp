@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,8 +21,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,53 +47,66 @@ class MainActivity : ComponentActivity() {
         setContent {
             LimonadaTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White
-                ) {
                     AppLimonade()
                 }
             }
         }
     }
-}
+
 @Preview
 @Composable
-    fun AppLimonade() { A
-    var tela by remember { mutableStateOf(1) }
+    fun AppLimonade(){
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.White
+        ){
+            var tela by remember { mutableStateOf(1) }
+            var espremer by remember { mutableStateOf(1) }
 
     when (tela) {
         1 -> AppContent(
-            R.string.limoeiro,
-            R.drawable.lemon_tree,
-            onImagemClick = {
-                tela = 2
-            }
-        )
+            text = stringResource(id = R.string.limoeiro),
+            painter = painterResource(id = R.drawable.lemon_tree),
+
+        ){
+            espremer = (2..4).random()
+            tela = 2
+        }
 
         2 -> AppContent(
-            R.string.limão,
-            R.drawable.lemon_squeeze
-        )
+            text = stringResource(id = R.string.limão),
+            painter = painterResource(id = R.drawable.lemon_squeeze)
+        ){
+            if (espremer > 1)
+                espremer --
+            else
+            tela = 3
 
-            ,
+        }
 
         3 -> AppContent(
-            R.string.copo_de_limonada,
-            R.drawable.lemon_drink
-        )
+            text = stringResource(id = R.string.copo_de_limonada),
+            painter = painterResource(id = R.drawable.lemon_drink)
+        ){ tela = 4 }
+
 
         4 -> AppContent(
-            R.string.copo_vazio,
-            R.drawable.lemon_restart
-        )
+            text = stringResource(id = R.string.copo_vazio),
+            painter = painterResource(id = R.drawable.lemon_restart)
+        ){ tela = 1 }
     }
 }
+    }
 
 
 @Composable
     fun AppContent(painter: Painter, text: String, onImagemClick:()->Unit) {
-        Column(
+    val state = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+    Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
